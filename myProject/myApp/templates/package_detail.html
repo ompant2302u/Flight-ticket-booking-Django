@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="page-title">Package Booking Details</h1>
+        
+        <div class="booking-detail-card">
+            <div class="detail-header">
+                <h2>{{ booking.package.name }}</h2>
+                <span class="status-badge status-{{ booking.status }}">{{ booking.get_status_display }}</span>
+            </div>
+            
+            <div class="detail-body">
+                <div class="detail-section">
+                    <h3>Package Information</h3>
+                    <p><strong>Destination:</strong> {{ booking.package.destination }}</p>
+                    <p><strong>Duration:</strong> {{ booking.package.duration }}</p>
+                    <p><strong>Description:</strong> {{ booking.package.description }}</p>
+                    <p><strong>Includes:</strong> {{ booking.package.includes }}</p>
+                    <p><strong>Price per Person:</strong> ${{ booking.package.price }}</p>
+                </div>
+                
+                <div class="detail-section">
+                    <h3>Booking Information</h3>
+                    <p><strong>Booking ID:</strong> {{ booking.booking_id }}</p>
+                    <p><strong>Customer Name:</strong> {{ booking.customer_name }}</p>
+                    <p><strong>Email:</strong> {{ booking.email }}</p>
+                    <p><strong>Phone:</strong> {{ booking.phone }}</p>
+                    <p><strong>Number of Travelers:</strong> {{ booking.travelers }}</p>
+                    <p><strong>Total Price:</strong> ${{ booking.package.price|floatformat:2 }} × {{ booking.travelers }} = ${{ booking.package.price|floatformat:2 }}</p>
+                    <p><strong>Booked On:</strong> {{ booking.booked_at|date:"F d, Y H:i" }}</p>
+                </div>
+            </div>
+            
+            <div class="detail-actions">
+                <button onclick="window.print()" class="btn-secondary">Print Booking</button>
+                <a href="{% url 'profile' %}" class="btn-outline">Back to Profile</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.booking-detail-card {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    max-width: 800px;
+    margin: 30px auto;
+}
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e0e0e0;
+    margin-bottom: 30px;
+}
+
+.detail-section {
+    margin-bottom: 30px;
+}
+
+.detail-section h3 {
+    color: #667eea;
+    margin-bottom: 15px;
+}
+
+.detail-section p {
+    margin: 10px 0;
+    line-height: 1.6;
+}
+
+.detail-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 2px solid #e0e0e0;
+}
+</style>
+{% endblock %}

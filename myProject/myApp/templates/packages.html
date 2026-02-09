@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="page-title">Travel Packages</h1>
+        
+        <div class="grid">
+            {% for package in packages %}
+            <div class="card package-card">
+                {% if package.image %}
+                <img src="{{ package.image.url }}" alt="{{ package.name }}" class="card-image">
+                {% else %}
+                <div class="card-image-placeholder">📦</div>
+                {% endif %}
+                <div class="card-body">
+                    <h3>{{ package.name }}</h3>
+                    <p class="destination">📍 {{ package.destination }}</p>
+                    <p class="description">{{ package.description }}</p>
+                    <p class="duration">⏱️ Duration: {{ package.duration }}</p>
+                    <p class="includes-text"><strong>Includes:</strong> {{ package.includes }}</p>
+                    <div class="card-footer">
+                        <span class="price">${{ package.price }}</span>
+                        <a href="{% url 'book_package' package.id %}" class="btn-primary">Book Package</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="no-results">No packages available at the moment.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

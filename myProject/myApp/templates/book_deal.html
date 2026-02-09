@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="page-title">Grab Deal: {{ deal.title }}</h1>
+        
+        <div class="booking-container">
+            <div class="booking-details">
+                <h2>Deal Details</h2>
+                <div class="deal-badge">{{ deal.discount_percentage }}% OFF</div>
+                <p><strong>Destination:</strong> {{ deal.destination }}</p>
+                <p><strong>Original Price:</strong> <span class="old-price">${{ deal.original_price }}</span></p>
+                <p><strong>Discounted Price:</strong> <span class="price">${{ deal.discounted_price }}</span></p>
+                <p><strong>Valid Until:</strong> {{ deal.valid_until }}</p>
+                <p>{{ deal.description }}</p>
+            </div>
+            
+            <div class="booking-form-container">
+                <h2>Booking Information</h2>
+                <form method="POST" class="booking-form">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" name="name" required value="{{ user.get_full_name }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" name="email" required value="{{ user.email }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Phone Number *</label>
+                        <input type="tel" name="phone" required>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">Confirm Booking</button>
+                    <a href="{% url 'deals' %}" class="btn-outline">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,356 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section booking-section">
+    <div class="container">
+        <div class="booking-header-modern">
+            <h1 class="page-title-modern">✈️ Book Your Flight</h1>
+            <p class="subtitle">Complete your booking in just a few steps</p>
+        </div>
+        
+        <div class="booking-container-modern">
+            <div class="flight-info-card-modern">
+                <div class="flight-card-header">
+                    <div class="airline-logo">{{ flight.airline|slice:":1" }}</div>
+                    <div>
+                        <h2>{{ flight.airline }}</h2>
+                        <p class="flight-num">{{ flight.flight_number }}</p>
+                    </div>
+                </div>
+                
+                <div class="route-display">
+                    <div class="route-point">
+                        <div class="city-code">{{ flight.origin|slice:":3"|upper }}</div>
+                        <div class="city-name">{{ flight.origin }}</div>
+                        <div class="time">{{ flight.departure_time }}</div>
+                    </div>
+                    <div class="route-line">
+                        <div class="plane-icon">✈</div>
+                        <div class="duration-badge">{{ flight.duration }}</div>
+                    </div>
+                    <div class="route-point">
+                        <div class="city-code">{{ flight.destination|slice:":3"|upper }}</div>
+                        <div class="city-name">{{ flight.destination }}</div>
+                        <div class="time">{{ flight.arrival_time }}</div>
+                    </div>
+                </div>
+                
+                <div class="flight-details-grid">
+                    <div class="detail-item">
+                        <span class="icon">📅</span>
+                        <div>
+                            <small>Date</small>
+                            <strong>{{ flight.departure_date }}</strong>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <span class="icon">✈️</span>
+                        <div>
+                            <small>Aircraft</small>
+                            <strong>{{ flight.aircraft_type }}</strong>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <span class="icon">🧳</span>
+                        <div>
+                            <small>Baggage</small>
+                            <strong>{{ flight.baggage_allowance }}</strong>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <span class="icon">💺</span>
+                        <div>
+                            <small>Available</small>
+                            <strong>{{ flight.seats_available }}/{{ flight.total_seats }}</strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="price-display">
+                    <span>Price per Passenger</span>
+                    <span class="price-large" id="pricePerPassenger">${{ flight.price }}</span>
+                </div>
+                <div class="price-display" style="border-top: 2px solid #e0e0e0; padding-top: 15px;">
+                    <span>Total Price (<span id="passengerCount">1</span> passenger<span id="passengerPlural"></span>)</span>
+                    <span class="price-large" id="totalPrice">${{ flight.price }}</span>
+                </div>
+            </div>
+            
+            <div class="booking-form-modern">
+                <form method="POST" id="bookingForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-section">
+                        <h3>👤 Passenger Information</h3>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Number of Passengers *</label>
+                                <input type="number" name="num_passengers" id="num_passengers" min="1" max="{{ flight.seats_available }}" value="1" required>
+                                <small class="form-hint">{{ flight.seats_available }} seats available</small>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Full Name *</label>
+                                <input type="text" name="name" required value="{{ user.get_full_name }}" placeholder="John Doe">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Email *</label>
+                                <input type="email" name="email" required value="{{ user.email }}" placeholder="john@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel" name="phone" placeholder="9841234567">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Passport Number <span class="passport-required" style="display:none;">*</span></label>
+                                <input type="text" name="passport" id="passportInput" placeholder="A12345678">
+                                <small class="form-hint">Required for international flights only</small>
+                            </div>
+                            <div class="form-group">
+                                <label>Nationality *</label>
+                                <select name="nationality" required class="country-select">
+                                    <option value="">Select Country</option>
+                                    {% for country, code, flag in countries %}
+                                    <option value="{{ country }}" {% if country == 'Nepal' %}selected{% endif %}>{{ flag }} {{ country }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>💺 Select Your Seat</h3>
+                        
+                        <div class="class-selector">
+                            <label class="class-option">
+                                <input type="radio" name="seat_class" value="economy" checked>
+                                <div class="class-card">
+                                    <span class="class-icon">💺</span>
+                                    <span class="class-name">Economy</span>
+                                    <span class="class-price">Included</span>
+                                </div>
+                            </label>
+                            <label class="class-option">
+                                <input type="radio" name="seat_class" value="business">
+                                <div class="class-card">
+                                    <span class="class-icon">🛋️</span>
+                                    <span class="class-name">Business</span>
+                                    <span class="class-price">+$200</span>
+                                </div>
+                            </label>
+                            <label class="class-option">
+                                <input type="radio" name="seat_class" value="first">
+                                <div class="class-card">
+                                    <span class="class-icon">👑</span>
+                                    <span class="class-name">First Class</span>
+                                    <span class="class-price">+$500</span>
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <div class="seat-map-container">
+                            <div class="seat-legend-modern">
+                                <span><span class="seat-mini available"></span> Available</span>
+                                <span><span class="seat-mini booked"></span> Booked</span>
+                                <span><span class="seat-mini selected"></span> Selected</span>
+                            </div>
+                            
+                            <div class="cabin-section" id="firstClassCabin" style="display:none;">
+                                <h4 class="cabin-title">First Class (Rows 1-2)</h4>
+                                <div class="seats-grid first-class">
+                                    {% for row in "AB" %}
+                                    <div class="seat-row-modern">
+                                        <span class="row-label">{{ row }}</span>
+                                        {% for col in "1234" %}
+                                        {% with seat_num=row|add:col %}
+                                        <div class="seat-modern {% if seat_num in booked_seats %}booked{% else %}available{% endif %}" 
+                                             data-seat="{{ seat_num }}" data-class="first"
+                                             {% if seat_num not in booked_seats %}onclick="selectSeat('{{ seat_num }}')"{% endif %}>
+                                            {{ seat_num }}
+                                        </div>
+                                        {% endwith %}
+                                        {% endfor %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <div class="cabin-section" id="businessClassCabin" style="display:none;">
+                                <h4 class="cabin-title">Business Class (Rows 3-6)</h4>
+                                <div class="seats-grid business-class">
+                                    {% for row in "CDEF" %}
+                                    <div class="seat-row-modern">
+                                        <span class="row-label">{{ row }}</span>
+                                        {% for col in "12345" %}
+                                        {% with seat_num=row|add:col %}
+                                        <div class="seat-modern {% if seat_num in booked_seats %}booked{% else %}available{% endif %}" 
+                                             data-seat="{{ seat_num }}" data-class="business"
+                                             {% if seat_num not in booked_seats %}onclick="selectSeat('{{ seat_num }}')"{% endif %}>
+                                            {{ seat_num }}
+                                        </div>
+                                        {% endwith %}
+                                        {% endfor %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <div class="cabin-section" id="economyClassCabin">
+                                <h4 class="cabin-title">Economy Class (Rows 7-20)</h4>
+                                <div class="seats-grid economy-class">
+                                    {% for row in "GHIJKLMNOPQRST" %}
+                                    <div class="seat-row-modern">
+                                        <span class="row-label">{{ row }}</span>
+                                        {% for col in "123456" %}
+                                        {% with seat_num=row|add:col %}
+                                        <div class="seat-modern {% if seat_num in booked_seats %}booked{% else %}available{% endif %}" 
+                                             data-seat="{{ seat_num }}" data-class="economy"
+                                             {% if seat_num not in booked_seats %}onclick="selectSeat('{{ seat_num }}')"{% endif %}>
+                                            {{ seat_num }}
+                                        </div>
+                                        {% endwith %}
+                                        {% endfor %}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <input type="hidden" name="seat_numbers" id="seat_numbers" required>
+                        <div id="selected-seat-display" class="selected-seat-modern"></div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>📝 Special Requests</h3>
+                        <textarea name="special_requests" rows="3" placeholder="Meal preferences, wheelchair assistance, extra legroom, etc."></textarea>
+                    </div>
+                    
+                    <div class="form-actions-modern">
+                        <a href="{% url 'flights' %}" class="btn-cancel">Cancel</a>
+                        <button type="submit" class="btn-book">
+                            <span>Confirm Booking</span>
+                            <span class="btn-icon">→</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+let selectedClass = 'economy';
+const flightType = '{{ flight.flight_type }}';
+const pricePerPassenger = {{ flight.price }};
+let selectedSeats = [];
+let maxPassengers = 1;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const passportInput = document.getElementById('passportInput');
+    const passportRequired = document.querySelector('.passport-required');
+    
+    if (flightType === 'international') {
+        passportInput.required = true;
+        if (passportRequired) passportRequired.style.display = 'inline';
+    }
+    
+    const numPassengersInput = document.getElementById('num_passengers');
+    if (numPassengersInput) {
+        numPassengersInput.addEventListener('input', function() {
+            maxPassengers = parseInt(this.value) || 1;
+            selectedSeats = [];
+            updateSelectedSeatsDisplay();
+            updateTotalPrice();
+        });
+    }
+});
+
+function updateTotalPrice() {
+    const numPassengers = parseInt(document.getElementById('num_passengers').value) || 1;
+    const totalPrice = (pricePerPassenger * numPassengers).toFixed(2);
+    
+    document.getElementById('passengerCount').textContent = numPassengers;
+    document.getElementById('passengerPlural').textContent = numPassengers > 1 ? 's' : '';
+    document.getElementById('totalPrice').textContent = '$' + totalPrice;
+}
+
+document.querySelectorAll('input[name="seat_class"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        selectedClass = this.value;
+        selectedSeats = [];
+        
+        document.querySelectorAll('.cabin-section').forEach(cabin => cabin.style.display = 'none');
+        
+        if (selectedClass === 'first') {
+            document.getElementById('firstClassCabin').style.display = 'block';
+        } else if (selectedClass === 'business') {
+            document.getElementById('businessClassCabin').style.display = 'block';
+        } else {
+            document.getElementById('economyClassCabin').style.display = 'block';
+        }
+        
+        document.querySelectorAll('.seat-modern.selected').forEach(seat => {
+            seat.classList.remove('selected');
+            seat.classList.add('available');
+        });
+        
+        updateSelectedSeatsDisplay();
+    });
+});
+
+function selectSeat(seatNumber) {
+    const seatElement = document.querySelector(`[data-seat="${seatNumber}"][data-class="${selectedClass}"]`);
+    
+    if (!seatElement || seatElement.classList.contains('booked')) {
+        return;
+    }
+    
+    const seatIndex = selectedSeats.indexOf(seatNumber);
+    
+    if (seatIndex > -1) {
+        selectedSeats.splice(seatIndex, 1);
+        seatElement.classList.remove('selected');
+        seatElement.classList.add('available');
+    } else {
+        if (selectedSeats.length >= maxPassengers) {
+            alert(`You can only select ${maxPassengers} seat(s) for ${maxPassengers} passenger(s)`);
+            return;
+        }
+        selectedSeats.push(seatNumber);
+        seatElement.classList.remove('available');
+        seatElement.classList.add('selected');
+    }
+    
+    updateSelectedSeatsDisplay();
+}
+
+function updateSelectedSeatsDisplay() {
+    const display = document.getElementById('selected-seat-display');
+    const hiddenInput = document.getElementById('seat_numbers');
+    
+    if (selectedSeats.length === 0) {
+        display.innerHTML = '';
+        hiddenInput.value = '';
+        return;
+    }
+    
+    hiddenInput.value = selectedSeats.join(',');
+    
+    display.innerHTML = `
+        <div class="seat-selected-badge">
+            <span class="check-icon">✓</span>
+            <span>Selected: ${selectedSeats.join(', ')} (${selectedSeats.length}/${maxPassengers})</span>
+        </div>
+    `;
+}
+</script>
+{% endblock %}

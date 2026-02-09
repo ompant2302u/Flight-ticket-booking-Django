@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<!-- HERO SECTION -->
+<section class="hero">
+    <div class="hero-content">
+        <h1 class="fade-in">Discover Your Next Adventure</h1>
+        <p class="fade-in">Book flights to amazing destinations worldwide</p>
+
+        <form method="GET" action="{% url 'flights' %}" class="search-form fade-in">
+            <input type="text" name="destination" placeholder="Where to?">
+            <input type="date" name="date">
+            <button type="submit" class="btn-primary">Search Flights</button>
+        </form>
+    </div>
+</section>
+
+<!-- POPULAR FLIGHTS -->
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">Popular Flights</h2>
+
+        <div class="grid">
+            {% for flight in flights %}
+            <div class="card flight-card">
+                <div class="card-header">
+                    <h3>{{ flight.airline }}</h3>
+                    <span class="badge">{{ flight.flight_number }}</span>
+                </div>
+
+                <div class="card-body">
+                    <div class="flight-route">
+                        <div class="location">
+                            <strong>{{ flight.origin }}</strong>
+                            <small>{{ flight.departure_time|default:"--" }}</small>
+                        </div>
+
+                        <div class="flight-arrow">✈️</div>
+
+                        <div class="location">
+                            <strong>{{ flight.destination }}</strong>
+                            <small>{{ flight.arrival_time|default:"--" }}</small>
+                        </div>
+                    </div>
+
+                    <p class="flight-date">{{ flight.departure_date|default:"Date TBA" }}</p>
+                    <p class="flight-duration">Duration: {{ flight.duration|default:"--" }}</p>
+
+                    <div class="card-footer">
+                        <span class="price">${{ flight.price|default:"0" }}</span>
+                        <a href="{% url 'book_flight' flight.id %}" class="btn-secondary">Book Now</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <p>No flights available at the moment.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center">
+            <a href="{% url 'flights' %}" class="btn-outline">View All Flights</a>
+        </div>
+    </div>
+</section>
+
+<!-- TRAVEL PACKAGES -->
+<section class="section bg-light">
+    <div class="container">
+        <h2 class="section-title">Travel Packages</h2>
+
+        <div class="grid">
+            {% for package in packages %}
+            <div class="card">
+                {% if package.image and package.image.url %}
+                <img src="{{ package.image.url }}" alt="{{ package.name }}" class="card-image">
+                {% endif %}
+
+                <div class="card-body">
+                    <h3>{{ package.name }}</h3>
+                    <p class="destination">📍 {{ package.destination }}</p>
+                    <p>{{ package.description|truncatewords:20 }}</p>
+                    <p class="duration">⏱️ {{ package.duration }}</p>
+
+                    <div class="card-footer">
+                        <span class="price">${{ package.price }}</span>
+                        <a href="{% url 'book_package' package.id %}" class="btn-secondary">Book Package</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <p>No packages available.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center">
+            <a href="{% url 'packages' %}" class="btn-outline">View All Packages</a>
+        </div>
+    </div>
+</section>
+
+<!-- SPECIAL DEALS -->
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">Special Deals</h2>
+
+        <div class="grid">
+            {% for deal in deals %}
+            <div class="card deal-card">
+                {% if deal.image and deal.image.url %}
+                <img src="{{ deal.image.url }}" alt="{{ deal.title }}" class="card-image">
+                {% endif %}
+
+                <div class="deal-badge">{{ deal.discount_percentage }}% OFF</div>
+
+                <div class="card-body">
+                    <h3>{{ deal.title }}</h3>
+                    <p class="destination">📍 {{ deal.destination }}</p>
+                    <p>{{ deal.description|truncatewords:15 }}</p>
+
+                    <div class="price-row">
+                        <span class="old-price">${{ deal.original_price }}</span>
+                        <span class="price">${{ deal.discounted_price }}</span>
+                    </div>
+
+                    <p class="valid-until">Valid until: {{ deal.valid_until }}</p>
+                    <a href="{% url 'book_deal' deal.id %}" class="btn-primary">Grab Deal</a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <p>No deals available.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center">
+            <a href="{% url 'deals' %}" class="btn-outline">View All Deals</a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

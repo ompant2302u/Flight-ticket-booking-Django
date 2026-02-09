@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="page-title">Book Package: {{ package.name }}</h1>
+        
+        <div class="booking-container">
+            <div class="booking-details">
+                <h2>Package Details</h2>
+                <p><strong>Destination:</strong> {{ package.destination }}</p>
+                <p><strong>Duration:</strong> {{ package.duration }}</p>
+                <p><strong>Price:</strong> ${{ package.price }} per person</p>
+                <p><strong>Includes:</strong> {{ package.includes }}</p>
+                <p>{{ package.description }}</p>
+            </div>
+            
+            <div class="booking-form-container">
+                <h2>Booking Information</h2>
+                <form method="POST" class="booking-form">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" name="name" required value="{{ user.get_full_name }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" name="email" required value="{{ user.email }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Phone Number *</label>
+                        <input type="tel" name="phone" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Number of Travelers *</label>
+                        <input type="number" name="travelers" min="1" value="1" required>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">Confirm Booking</button>
+                    <a href="{% url 'packages' %}" class="btn-outline">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

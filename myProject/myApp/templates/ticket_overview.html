@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="page-title">Booking Confirmed! ✅</h1>
+        
+        <div class="ticket-container">
+            <div class="ticket-card">
+                <div class="ticket-header">
+                    <h2>E-Ticket</h2>
+                    <p>Ticket ID: {{ ticket.ticket_id }}</p>
+                </div>
+                
+                <div class="ticket-body">
+                    <div class="ticket-section">
+                        <h3>Passenger Information</h3>
+                        <p><strong>Name:</strong> {{ ticket.passenger_name }}</p>
+                        <p><strong>Email:</strong> {{ ticket.email }}</p>
+                        {% if ticket.phone %}
+                        <p><strong>Phone:</strong> {{ ticket.phone }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="ticket-section">
+                        <h3>Flight Details</h3>
+                        <p><strong>Flight Number:</strong> {{ ticket.flight.flight_number }}</p>
+                        <p><strong>Airline:</strong> {{ ticket.flight.airline }}</p>
+                        <p><strong>From:</strong> {{ ticket.flight.origin }}</p>
+                        <p><strong>To:</strong> {{ ticket.flight.destination }}</p>
+                        <p><strong>Date:</strong> {{ ticket.flight.departure_date }}</p>
+                        <p><strong>Departure:</strong> {{ ticket.flight.departure_time }}</p>
+                        <p><strong>Arrival:</strong> {{ ticket.flight.arrival_time }}</p>
+                    </div>
+                    
+                    <div class="ticket-section">
+                        <h3>Booking Details</h3>
+                        <p><strong>Status:</strong> <span class="status-confirmed">{{ ticket.get_status_display }}</span></p>
+                        <p><strong>Booked At:</strong> {{ ticket.booked_at|date:"M d, Y H:i" }}</p>
+                    </div>
+                    
+                    <div class="qr-section">
+                        <h3>QR Code</h3>
+                        <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code" class="qr-code">
+                        <p>Show this QR code at the airport</p>
+                    </div>
+                </div>
+                
+                <div class="ticket-footer">
+                    <button onclick="window.print()" class="btn-primary">Print Ticket</button>
+                    <a href="{% url 'index' %}" class="btn-outline">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

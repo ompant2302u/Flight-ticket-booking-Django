@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="page-title">My Profile</h1>
+        
+        <div class="profile-container">
+            <div class="profile-card">
+                <div class="profile-header">
+                    {% if profile.photo %}
+                    <img src="{{ profile.photo.url }}" alt="Profile" class="profile-photo">
+                    {% else %}
+                    <div class="profile-photo-placeholder">{{ user.username.0|upper }}</div>
+                    {% endif %}
+                    <h2>{{ user.username }}</h2>
+                    <p>{{ user.email }}</p>
+                    <a href="{% url 'edit_profile' %}" class="btn-secondary">Edit Profile</a>
+                </div>
+                
+                <div class="profile-info">
+                    <div class="info-row">
+                        <span>Phone:</span>
+                        <strong>{{ profile.phone|default:"Not provided" }}</strong>
+                    </div>
+                    <div class="info-row">
+                        <span>Address:</span>
+                        <strong>{{ profile.address|default:"Not provided" }}</strong>
+                    </div>
+                    <div class="info-row">
+                        <span>Bio:</span>
+                        <p>{{ profile.bio|default:"No bio yet" }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bookings-section">
+                <h2>My Bookings</h2>
+                
+                <h3>Flight Tickets</h3>
+                {% if tickets %}
+                <div class="bookings-list">
+                    {% for ticket in tickets %}
+                    <div class="booking-card">
+                        <div class="booking-header">
+                            <span class="ticket-id">Ticket #{{ ticket.ticket_id|truncatechars:13 }}</span>
+                            <span class="status status-{{ ticket.status }}">{{ ticket.get_status_display }}</span>
+                        </div>
+                        <div class="booking-details">
+                            <p><strong>Flight:</strong> {{ ticket.flight.airline }} {{ ticket.flight.flight_number }}</p>
+                            <p><strong>Route:</strong> {{ ticket.flight.origin }} → {{ ticket.flight.destination }}</p>
+                            <p><strong>Date:</strong> {{ ticket.flight.departure_date }} at {{ ticket.flight.departure_time }}</p>
+                            <p><strong>Seat:</strong> {{ ticket.seat_number }} ({{ ticket.get_seat_class_display }})</p>
+                            <p><strong>Passenger:</strong> {{ ticket.passenger_name }}</p>
+                            <p><strong>Price:</strong> ${{ ticket.flight.price }}</p>
+                            <p><strong>Booked:</strong> {{ ticket.booked_at|date:"M d, Y H:i" }}</p>
+                            {% if ticket.status == 'refunded' %}
+                            <p class="refund-note"><strong>Refund Amount:</strong> ${{ ticket.refund_amount }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="booking-actions">
+                            <a href="{% url 'ticket_detail' ticket.ticket_id %}" class="btn-sm btn-primary">View Details</a>
+                            {% if ticket.status == 'confirmed' %}
+                            <a href="{% url 'request_refund' ticket.ticket_id %}" class="btn-sm btn-danger">Request Refund</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="no-results">No flight bookings yet. <a href="{% url 'flights' %}">Book your first flight!</a></p>
+                {% endif %}
+                
+                <h3 style="margin-top: 2rem;">Package Bookings</h3>
+                {% if package_bookings %}
+                <div class="bookings-list">
+                    {% for booking in package_bookings %}
+                    <div class="booking-card">
+                        <div class="booking-header">
+                            <span class="ticket-id">Booking #{{ booking.booking_id|truncatechars:13 }}</span>
+                            <span class="status status-{{ booking.status }}">{{ booking.get_status_display }}</span>
+                        </div>
+                        <div class="booking-details">
+                            <p><strong>Package:</strong> {{ booking.package.name }}</p>
+                            <p><strong>Destination:</strong> {{ booking.package.destination }}</p>
+                            <p><strong>Duration:</strong> {{ booking.package.duration }}</p>
+                            <p><strong>Travelers:</strong> {{ booking.travelers }}</p>
+                            <p><strong>Price:</strong> ${{ booking.package.price }} per person</p>
+                            <p><strong>Booked:</strong> {{ booking.booked_at|date:"M d, Y H:i" }}</p>
+                        </div>
+                        <div class="booking-actions">
+                            <a href="{% url 'package_detail' booking.booking_id %}" class="btn-sm btn-primary">View Details</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="no-results">No package bookings yet. <a href="{% url 'packages' %}">Explore packages!</a></p>
+                {% endif %}
+                
+                <h3 style="margin-top: 2rem;">Deal Bookings</h3>
+                {% if deal_bookings %}
+                <div class="bookings-list">
+                    {% for booking in deal_bookings %}
+                    <div class="booking-card">
+                        <div class="booking-header">
+                            <span class="ticket-id">Booking #{{ booking.booking_id|truncatechars:13 }}</span>
+                            <span class="status status-{{ booking.status }}">{{ booking.get_status_display }}</span>
+                        </div>
+                        <div class="booking-details">
+                            <p><strong>Deal:</strong> {{ booking.deal.title }}</p>
+                            <p><strong>Destination:</strong> {{ booking.deal.destination }}</p>
+                            <p><strong>Price:</strong> ${{ booking.deal.discounted_price }} ({{ booking.deal.discount_percentage }}% off)</p>
+                            <p><strong>Booked:</strong> {{ booking.booked_at|date:"M d, Y H:i" }}</p>
+                        </div>
+                        <div class="booking-actions">
+                            <a href="{% url 'deal_detail' booking.booking_id %}" class="btn-sm btn-primary">View Details</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="no-results">No deal bookings yet. <a href="{% url 'deals' %}">Check out deals!</a></p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="page-title">Available Flights</h1>
+        
+        <form method="GET" class="filter-form-modern">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label>Flight Type</label>
+                    <select name="flight_type" class="filter-select">
+                        <option value="">All Flights</option>
+                        <option value="domestic" {% if request.GET.flight_type == 'domestic' %}selected{% endif %}>Domestic</option>
+                        <option value="international" {% if request.GET.flight_type == 'international' %}selected{% endif %}>International</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>Destination</label>
+                    <select name="destination" class="filter-select">
+                        <option value="">All Destinations</option>
+                        {% for dest in destinations %}
+                        <option value="{{ dest }}" {% if request.GET.destination == dest %}selected{% endif %}>{{ dest }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>Airline</label>
+                    <select name="airline" class="filter-select">
+                        <option value="">All Airlines</option>
+                        {% for air in airlines %}
+                        <option value="{{ air }}" {% if request.GET.airline == air %}selected{% endif %}>{{ air }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>Date</label>
+                    <input type="date" name="date" value="{{ request.GET.date }}" class="filter-input">
+                </div>
+                
+                <div class="filter-group">
+                    <label>Max Price</label>
+                    <select name="max_price" class="filter-select">
+                        <option value="">Any Price</option>
+                        <option value="200" {% if request.GET.max_price == '200' %}selected{% endif %}>Under $200</option>
+                        <option value="500" {% if request.GET.max_price == '500' %}selected{% endif %}>Under $500</option>
+                        <option value="1000" {% if request.GET.max_price == '1000' %}selected{% endif %}>Under $1000</option>
+                        <option value="2000" {% if request.GET.max_price == '2000' %}selected{% endif %}>Under $2000</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="filter-actions">
+                <button type="submit" class="btn-primary">Apply Filters</button>
+                <a href="{% url 'flights' %}" class="btn-outline">Clear All</a>
+            </div>
+        </form>
+
+        <div class="grid">
+            {% for flight in flights %}
+            <div class="card flight-card {% if flight.is_fully_booked %}fully-booked{% endif %}">
+                <div class="card-header">
+                    <h3>{{ flight.airline }}</h3>
+                    <span class="badge">{{ flight.flight_number }}</span>
+                    <span class="flight-type-badge {{ flight.flight_type }}">{{ flight.get_flight_type_display }}</span>
+                </div>
+                <div class="card-body">
+                    <div class="flight-route">
+                        <div class="location">
+                            <strong>{{ flight.origin }}</strong>
+                            <small>{{ flight.departure_time }}</small>
+                        </div>
+                        <div class="flight-arrow">✈️</div>
+                        <div class="location">
+                            <strong>{{ flight.destination }}</strong>
+                            <small>{{ flight.arrival_time }}</small>
+                        </div>
+                    </div>
+                    <p class="flight-date">📅 {{ flight.departure_date }}</p>
+                    <p class="flight-duration">⏱️ {{ flight.duration }}</p>
+                    <p class="seats-available">
+                        💺 {{ flight.seats_available }} / {{ flight.total_seats }} seats available
+                        {% if flight.seats_available < 10 and flight.seats_available > 0 %}
+                        <span class="low-seats-warning">Only {{ flight.seats_available }} left!</span>
+                        {% endif %}
+                    </p>
+                    <div class="card-footer">
+                        <span class="price">${{ flight.price }}</span>
+                        {% if flight.is_fully_booked %}
+                        <button class="btn-disabled" disabled>Fully Booked</button>
+                        {% else %}
+                        <a href="{% url 'book_flight' flight.id %}" class="btn-secondary">Book Now</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="no-results">No flights found matching your criteria.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

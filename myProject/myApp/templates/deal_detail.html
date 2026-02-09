@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="page-title">Deal Booking Details</h1>
+        
+        <div class="booking-detail-card">
+            <div class="detail-header">
+                <h2>{{ booking.deal.title }}</h2>
+                <span class="status-badge status-{{ booking.status }}">{{ booking.get_status_display }}</span>
+            </div>
+            
+            <div class="deal-badge-large">{{ booking.deal.discount_percentage }}% OFF</div>
+            
+            <div class="detail-body">
+                <div class="detail-section">
+                    <h3>Deal Information</h3>
+                    <p><strong>Destination:</strong> {{ booking.deal.destination }}</p>
+                    <p><strong>Description:</strong> {{ booking.deal.description }}</p>
+                    <p><strong>Original Price:</strong> <span class="old-price">${{ booking.deal.original_price }}</span></p>
+                    <p><strong>Discounted Price:</strong> <span class="price-large">${{ booking.deal.discounted_price }}</span></p>
+                    <p><strong>You Saved:</strong> <span class="savings">${{ booking.deal.original_price|floatformat:2 }}</span></p>
+                    <p><strong>Valid Until:</strong> {{ booking.deal.valid_until }}</p>
+                </div>
+                
+                <div class="detail-section">
+                    <h3>Booking Information</h3>
+                    <p><strong>Booking ID:</strong> {{ booking.booking_id }}</p>
+                    <p><strong>Customer Name:</strong> {{ booking.customer_name }}</p>
+                    <p><strong>Email:</strong> {{ booking.email }}</p>
+                    <p><strong>Phone:</strong> {{ booking.phone }}</p>
+                    <p><strong>Booked On:</strong> {{ booking.booked_at|date:"F d, Y H:i" }}</p>
+                </div>
+            </div>
+            
+            <div class="detail-actions">
+                <button onclick="window.print()" class="btn-secondary">Print Booking</button>
+                <a href="{% url 'profile' %}" class="btn-outline">Back to Profile</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.deal-badge-large {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+    color: white;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin: 20px 0;
+    display: inline-block;
+}
+
+.old-price {
+    text-decoration: line-through;
+    color: #999;
+    font-size: 18px;
+}
+
+.price-large {
+    color: #28a745;
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.savings {
+    color: #28a745;
+    font-weight: bold;
+    font-size: 20px;
+}
+</style>
+{% endblock %}

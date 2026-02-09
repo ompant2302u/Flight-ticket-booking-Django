@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="page-title">Special Deals</h1>
+        
+        <div class="grid">
+            {% for deal in deals %}
+            <div class="card deal-card">
+                {% if deal.image %}
+                <img src="{{ deal.image.url }}" alt="{{ deal.title }}" class="card-image">
+                {% else %}
+                <div class="card-image-placeholder">🎉</div>
+                {% endif %}
+                <div class="deal-badge">{{ deal.discount_percentage }}% OFF</div>
+                <div class="card-body">
+                    <h3>{{ deal.title }}</h3>
+                    <p class="destination">📍 {{ deal.destination }}</p>
+                    <p class="description">{{ deal.description }}</p>
+                    <div class="price-comparison">
+                        <span class="old-price">${{ deal.original_price }}</span>
+                        <span class="price">${{ deal.discounted_price }}</span>
+                    </div>
+                    <p class="valid-until">⏰ Valid until: {{ deal.valid_until }}</p>
+                    <a href="{% url 'book_deal' deal.id %}" class="btn-primary">Grab This Deal</a>
+                </div>
+            </div>
+            {% empty %}
+            <p class="no-results">No active deals at the moment. Check back soon!</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

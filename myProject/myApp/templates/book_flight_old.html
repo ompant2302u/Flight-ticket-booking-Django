@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="page-title">Book Your Flight</h1>
+        
+        <div class="booking-container">
+            <div class="flight-details-card">
+                <h2>Flight Details</h2>
+                <div class="detail-row">
+                    <span>Flight Number:</span>
+                    <strong>{{ flight.flight_number }}</strong>
+                </div>
+                <div class="detail-row">
+                    <span>Airline:</span>
+                    <strong>{{ flight.airline }}</strong>
+                </div>
+                <div class="detail-row">
+                    <span>Route:</span>
+                    <strong>{{ flight.origin }} → {{ flight.destination }}</strong>
+                </div>
+                <div class="detail-row">
+                    <span>Date:</span>
+                    <strong>{{ flight.departure_date }}</strong>
+                </div>
+                <div class="detail-row">
+                    <span>Departure:</span>
+                    <strong>{{ flight.departure_time }}</strong>
+                </div>
+                <div class="detail-row">
+                    <span>Arrival:</span>
+                    <strong>{{ flight.arrival_time }}</strong>
+                </div>
+                <div class="detail-row">
+                    <span>Duration:</span>
+                    <strong>{{ flight.duration }}</strong>
+                </div>
+                <div class="detail-row price-row">
+                    <span>Price:</span>
+                    <strong class="price">${{ flight.price }}</strong>
+                </div>
+            </div>
+
+            <form method="POST" class="booking-form">
+                {% csrf_token %}
+                <h2>Passenger Information</h2>
+                
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" name="name" required value="{% if user.is_authenticated and user.first_name %}{{ user.first_name }} {{ user.last_name }}{% endif %}">
+                </div>
+                
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" name="email" required value="{% if user.is_authenticated %}{{ user.email }}{% endif %}">
+                </div>
+                
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" name="phone" value="{% if user.is_authenticated and user.profile %}{{ user.profile.phone }}{% endif %}">
+                </div>
+                
+                <button type="submit" class="btn-primary btn-block">Confirm Booking</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

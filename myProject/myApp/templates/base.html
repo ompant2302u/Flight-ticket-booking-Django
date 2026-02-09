@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SkyVoyage - Flight Booking{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="{% url 'index' %}" class="logo">✈️ SkyVoyage</a>
+                <div class="nav-links">
+                    <a href="{% url 'flights' %}">Flights</a>
+                    <a href="{% url 'packages' %}">Packages</a>
+                    <a href="{% url 'deals' %}">Deals</a>
+                </div>
+            </div>
+            <div class="nav-right">
+                {% if user.is_authenticated %}
+                    {% if user.is_staff %}
+                        <a href="/admin/" class="nav-link">Admin Panel</a>
+                        <a href="{% url 'admin_dashboard' %}" class="nav-link">Dashboard</a>
+                    {% endif %}
+                    <div class="profile-dropdown">
+                        <button class="profile-btn">
+                            {% if user.profile and user.profile.photo %}
+                                <img src="{{ user.profile.photo.url }}" alt="Profile">
+                            {% else %}
+                                <div class="profile-placeholder">{{ user.username.0|upper }}</div>
+                            {% endif %}
+                            <span>{{ user.username }}</span>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="{% url 'profile' %}">My Profile</a>
+                            <a href="{% url 'edit_profile' %}">Edit Profile</a>
+                            <a href="{% url 'logout' %}">Logout</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{% url 'login' %}" class="nav-link">Login</a>
+                    <a href="{% url 'signup' %}" class="btn-primary">Get Started</a>
+                {% endif %}
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+        </div>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="{% url 'flights' %}">Flights</a>
+        <a href="{% url 'packages' %}">Packages</a>
+        <a href="{% url 'deals' %}">Deals</a>
+        {% if user.is_authenticated %}
+            {% if user.is_staff %}
+                <a href="/admin/">Admin Panel</a>
+                <a href="{% url 'admin_dashboard' %}">Dashboard</a>
+            {% endif %}
+            <a href="{% url 'profile' %}">Profile</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        {% else %}
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'signup' %}">Sign Up</a>
+        {% endif %}
+    </div>
+
+    {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>SkyVoyage</h3>
+                <p>Your trusted travel partner for unforgettable journeys.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <a href="{% url 'flights' %}">Flights</a>
+                <a href="{% url 'packages' %}">Packages</a>
+                <a href="{% url 'deals' %}">Deals</a>
+            </div>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p>Email: info@skyvoyage.com</p>
+                <p>Phone: +1 (555) 123-4567</p>
+            </div>
+            <div class="footer-section">
+                <h4>Follow Us</h4>
+                <div class="social-links">
+                    <a href="#">Facebook</a>
+                    <a href="#">Twitter</a>
+                    <a href="#">Instagram</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 SkyVoyage. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/script.js' %}"></script>
+    <script>
+        // Add scroll animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate elements on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all cards and sections
+            document.querySelectorAll('.card, .flight-card, .package-card, .deal-card, .form-section').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(el);
+            });
+
+            // Navbar scroll effect
+            const navbar = document.getElementById('navbar');
+            if (navbar) {
+                window.addEventListener('scroll', function() {
+                    if (window.scrollY > 50) {
+                        navbar.classList.add('scrolled');
+                    } else {
+                        navbar.classList.remove('scrolled');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
